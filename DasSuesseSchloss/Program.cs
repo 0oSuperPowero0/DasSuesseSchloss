@@ -7,7 +7,7 @@ using DasSuesseSchloss;
 // Konsole Fenster Größe
 
 
-Spieler spieler = new Spieler("Prinzen Rollen");
+Spieler spieler = new Spieler();
 
 
 Console.WriteLine("1.Starten");
@@ -21,7 +21,8 @@ if (antwort == "1")
     Sprechen($"HILFE!!\nHilf mir!");
     Console.WriteLine();
     Console.Clear();
-   // Akt1(); // beginnen
+    // Akt1(); // !! endlose Schleife
+    
 }
 else if (antwort == "2")
 {
@@ -44,63 +45,80 @@ else
         Console.WriteLine();
     }
 
-//
-//
-// void Akt1()
-//{
-//    Console.WriteLine(" Willkommen in der Plätzchen Wüste!");
-//    Kampf(new List<MonsterGruppe>
-//            {
-//                new MonsterGruppe("Knoppers", 35, 10, 15, 1, 3, 5, "Plätzchen Wüste"),
-//                new MonsterGruppe("Hanuta", 40, 15, 20, 1, 2, 6, "Plätzchen Wüste")
-//            });
-//
-//    Console.Clear();
-//    Akt1();
-//}
-//
-// void Akt2()
-//{
-//    Console.WriteLine(" Willkommen in Pummelig Gummifeld!");
-//    Kampf(new List<MonsterGruppe>
-//            {
-//                new MonsterGruppe("Trolli", 40, 20, 25, 1, 3, 8, "Pummelig Gummifeld"),
-//                new MonsterGruppe("Haribo", 50, 25, 40, 1, 2, 10, "Pummelig Gummifeld")
-//            });
-//
-//    Console.Clear();
-//    Akt2();    
-//}
-//
-//void Akt3()
-//{
-//    Console.WriteLine(" Willkommen in Karamell Sumpf!");
-//    Kampf(new List<MonsterGruppe>
-//            {
-//                new MonsterGruppe("Toffee", 60, 35, 45, 1, 3, 20, "Karamell Sumpf")
-//            });
-//
-//    Console.WriteLine(" Glückwunsch! Das Abenteuer ist abgeschlossen!");
-//}
-//
-// void Kampf(List<MonsterGruppe> monsterGruppen)
-//{
-//    foreach (var gruppe in monsterGruppen)
-//    {
-//        Console.WriteLine(gruppe.Region);
-//        foreach (var monster in gruppe.MonsterListe)
-//        {
-//            Console.WriteLine($" {monster.Name} <HP: {monster.HP}>");
-//            spieler.AddXP(monster.XP);
-//            string[] items = { "Heiltrank", "Zucker" };
-//            string itemFallen = items[new Random().Next(items.Length)];
-//            spieler.AddItem(itemFallen);
-//        }
-//        Console.WriteLine("--------------------------------------------------------");
-//    }
-//}
+
+
+ void Akt1()
+{
+    Console.WriteLine(" Willkommen in der Plätzchen Wüste!");
+    Kampf(new List<MonsterGruppe>
+            {
+                new MonsterGruppe("Knoppers", 35, 10, 15, 1, 3, 5, "Plätzchen Wüste"),
+                new MonsterGruppe("Hanuta", 40, 15, 20, 1, 2, 6, "Plätzchen Wüste")
+            });
+
+    Console.Clear();
+    Akt1();
+}
+
+ void Akt2()
+{
+    Console.WriteLine(" Willkommen in Pummelig Gummifeld!");
+    Kampf(new List<MonsterGruppe>
+            {
+                new MonsterGruppe("Trolli", 40, 20, 25, 1, 3, 8, "Pummelig Gummifeld"),
+                new MonsterGruppe("Haribo", 50, 25, 40, 1, 2, 10, "Pummelig Gummifeld")
+            });
+
+    Console.Clear();
+    Akt2();    
+}
+
+void Akt3()
+{
+    Console.WriteLine(" Willkommen in Karamell Sumpf!");
+    Kampf(new List<MonsterGruppe>
+            {
+                new MonsterGruppe("Toffee", 60, 35, 45, 1, 3, 20, "Karamell Sumpf")
+            });
+
+    Console.WriteLine(" Glückwunsch! Das Abenteuer ist abgeschlossen!");
+}
+void Kampf(List<MonsterGruppe> monsterGruppen)
+{
+    foreach (var gruppe in monsterGruppen)
+    {
+        Console.WriteLine(gruppe.Region);
+        foreach (var monster in gruppe.MonsterListe)
+        {
+            Console.WriteLine($" {monster.Name} <HP: {monster.HP}>");
+            spieler.AddXP(monster.XP);
+            string[] items = { "Heiltrank", "Zucker" }; // nachdem Kampf Spieler automatisch Item bekommen(Inventar)
+            string itemFallen = items[new Random().Next(items.Length)];
+            spieler.AddItem(itemFallen);
+        }
+
+        while (true)
+        {
+            Console.WriteLine("Heiltrank verwenden? (Ja(1)/Nein(2))");
+            string heiltrankverweden = Console.ReadLine() ?? "";
+            if (heiltrankverweden == "1")
+            {
+                spieler.Heilen();
+                break;
+            }
+            else if(heiltrankverweden == "2" || heiltrankverweden != "1")
+            {
+                Console.WriteLine("Weiter mit dem Kamf..");
+                break;
+            }           
+
+                }
+            Console.WriteLine("--------------------------------------------------------");
+    }
+}
+
 Console.WriteLine($"Inventar: {string.Join(", ", spieler.Inventar)}");
-spieler.InventarAnzeigen();
+
 
 // jede Stufe wird zufällige Auswahl von Monster erschienen
 //Random rnd = new Random();
