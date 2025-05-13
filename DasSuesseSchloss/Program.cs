@@ -30,24 +30,23 @@ else if (antwort == "2")
 }
 else if (antwort == "3")
 {
-    Console.WriteLine("Möchten Sie ins Bett gehen?.");
+    Sprechen("Möchten Sie ins Bett gehen?.");
     Environment.Exit(0);
 }
 else
 { Console.WriteLine("Wählen Sie 1, 2 oder 3"); }
-    void Sprechen(string text)
+
+void Sprechen(string text)// nur hier außer andere Klasse
+{
+    foreach (char c in text)
     {
-        foreach (char c in text)
-        {
-            Console.Write(c); // einzelne Buchstaben erscheinen
-            Thread.Sleep(50);
-        }
-        Console.WriteLine();
+        Console.WriteLine(c);
+        Thread.Sleep(50);
     }
+    Console.WriteLine();
+}
 
-
-
- void Akt1()
+void Akt1()
 {
     Console.WriteLine(" Willkommen in der Plätzchen Wüste!");
     Kampf(new List<MonsterGruppe>
@@ -81,7 +80,12 @@ void Akt3()
                 new MonsterGruppe("Toffee", 60, 35, 45, 1, 3, 20, "Karamell Sumpf")
             });
 
-    Console.WriteLine(" Glückwunsch! Das Abenteuer ist abgeschlossen!");
+}
+
+void Bossbegegnen()
+{
+    Boss schokoB = new Boss();
+    schokoB.Dialog1();
 }
 void Kampf(List<MonsterGruppe> monsterGruppen)
 {
@@ -108,7 +112,7 @@ void Kampf(List<MonsterGruppe> monsterGruppen)
             }
             else if(heiltrankverweden == "2" || heiltrankverweden != "1")
             {
-                Console.WriteLine("Weiter mit dem Kamf..");
+                Sprechen("Weiter mit dem Kamf..");
                 break;
             }           
 

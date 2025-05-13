@@ -42,22 +42,22 @@ public class Spieler : LebensObjekte
     public void AddItem(string item) // Nach dem Kampfen Item von Monster kriegen
     {
         Inventar.Add(item);
-        Console.WriteLine($"{Name} erhält: {item}");
+        Sprechen($"{Name} erhält: {item}");
     }
     public void InventarAnzeigen()
     {
-        Console.WriteLine($"Inventar: {string.Join(" - ", Inventar)}");
+        Sprechen($"Inventar: {string.Join(" - ", Inventar)}");
     }
     public void InventarEntfernen(string item)
     {
         if (Inventar.Contains(item))
         {
             Inventar.Remove(item);
-            Console.WriteLine($"{item} wurde aus dem Inventar entfernt.");
+            Sprechen($"{item} wurde aus dem Inventar entfernt.");
         }
         else
         {
-            Console.WriteLine($"{item} ist nicht im Inventar.");
+            Sprechen($"{item} ist nicht im Inventar.");
         }
     }
     public void Heilen()
@@ -66,11 +66,11 @@ public class Spieler : LebensObjekte
         {
             HP += 50;
             Inventar.Remove("HeilTrank");
-            Console.WriteLine($"{Name} hat einen Heiltrank getrunken.\n + 50 HP\n < Prinzen Rollen : {HP} ");
+            Sprechen($"{Name} hat einen Heiltrank getrunken.\n + 50 HP\n < Prinzen Rollen : {HP} ");
         }
         else
         {
-            Console.WriteLine("Keine Heiltrank! Lauf weg! ");  
+            Sprechen("Keine Heiltrank! Lauf weg! ");  
         }
     }
     public void Speichern()
