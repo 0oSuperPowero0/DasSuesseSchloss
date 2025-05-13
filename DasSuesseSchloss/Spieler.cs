@@ -31,7 +31,7 @@ public class Spieler : LebensObjekte
         {
             LevelUp();
         }
-    }  private void LevelUp()
+    }  private void LevelUp()//hp und Angriffkraftbereich in der Mothode gerade ändern
     {
         Level++;
         HP += 50;

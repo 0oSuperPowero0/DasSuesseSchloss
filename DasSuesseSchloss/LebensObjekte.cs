@@ -20,19 +20,19 @@ public abstract class LebensObjekte : ISprechen
     {
         foreach (char c in text)
         {
-            Console.WriteLine(c);
+            Console.WriteLine(string.Join("",c));// ändern die horizontale Ausgabe
             Thread.Sleep(50);
         }
         Console.WriteLine();
     }
 
-    public virtual void SchadenNehmen(int schaden)
+    public virtual void SchadenNehmen(ref int hp, int schaden)// nur hp mit ref in out möglich
     {
-        HP -= schaden;
+        hp -= schaden;
         Sprechen($"{Name} nimmt {schaden} Schaden!");
-        if (HP <= 0)
+        if (hp <= 0)
         {
-            HP = 0;
+            hp = 0;
             Sprechen($"{Name} wurde besiegt!");
         }
     }
