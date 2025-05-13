@@ -34,6 +34,21 @@ public class Monster : LebensObjekte
     }
    
 }
+public class Boss : LebensObjekte
+{
+    public Boss() : base("SchokoB", 300) { }
+    public override int Angriff()
+    {
+        Random rnd = new Random();
+        return rnd.Next(45, 60);
+    }
+    public void Dialog()
+    {
+
+        Sprechen("hey");
+    }
+
+}
 public class MonsterGruppe // separate Monstergruppe erstellen und kontrollieren
 {
     public List<Monster> MonsterListe { get; private set; } 
