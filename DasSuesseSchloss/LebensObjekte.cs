@@ -18,12 +18,7 @@ public abstract class LebensObjekte : ISprechen
     public abstract int Angriff(); // alle Charakter muss angreiffen können
     public void Sprechen(string text)// Monster und Spieler können Typing Scrpipt
     {
-        foreach (char c in text)
-        {
-            Console.WriteLine(string.Join("",c));// ändern die horizontale Ausgabe
-            Thread.Sleep(50);
-        }
-        Console.WriteLine();
+        
     }
 
     public virtual void SchadenNehmen(ref int hp, int schaden)// nur hp mit ref in out möglich

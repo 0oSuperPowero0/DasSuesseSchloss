@@ -41,12 +41,7 @@ public class Boss : LebensObjekte
     {
         Random rnd = new Random();
         return rnd.Next(45, 60);
-    }
-    public void Dialog1()
-    {
-
-        Sprechen("hey");
-    }
+    }    
 
 }
 public class MonsterGruppe // separate Monstergruppe erstellen und kontrollieren

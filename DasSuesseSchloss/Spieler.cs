@@ -46,7 +46,7 @@ public class Spieler : LebensObjekte
     }
     public void InventarAnzeigen()
     {
-        Sprechen($"Inventar: {string.Join(" - ", Inventar)}");
+        Console.WriteLine($"Inventar: {string.Join(" - ", Inventar)}");
     }
     public void InventarEntfernen(string item)
     {
@@ -68,7 +68,7 @@ public class Spieler : LebensObjekte
             Inventar.Remove("HeilTrank");
             Sprechen($"{Name} hat einen Heiltrank getrunken.\n + 50 HP\n < Prinzen Rollen : {HP} ");
         }
-        else
+        else// 2 Mal?
         {
             Sprechen("Keine Heiltrank! Lauf weg! ");  
         }

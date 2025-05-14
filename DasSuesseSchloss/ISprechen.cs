@@ -8,5 +8,15 @@ namespace DasSuesseSchloss;
 
 public interface ISprechen
 {
-    void Sprechen(string text);// jede Klasse die ISprechen implementiert, kann bentzen Typing Script.
+    void Sprechen(string spr)
+    {
+          
+        foreach (char c in spr)
+        {
+            Console.WriteLine(string.Join("",c));// muss ändern die horizontale Ausgabe
+            Thread.Sleep(50);
+        }   
+
+    }
+    // jede Klasse die ISprechen implementiert, kann bentzen Typing Script.
 }

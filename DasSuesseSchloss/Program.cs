@@ -1,32 +1,40 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 using DasSuesseSchloss;
-
+using System;
+using System.Threading.Tasks.Dataflow;
+//
 //  Console.SetWindowSize(100, 50);
 //  Console.SetBufferSize(100, 50);
 // Konsole Fenster Größe
 
 
 Spieler spieler = new Spieler();
+Boss schokoB = new Boss();
+Text text = new Text();
 
 
 Console.WriteLine("1.Starten");
-Console.WriteLine("2.Speichern");
+Console.WriteLine("2.Daten laden");
 Console.WriteLine("3.Verlasen");
 string antwort = (Console.ReadLine() ?? "").Trim();
+Console.Clear();
 
 if (antwort == "1")
 {
+  Sprechen(text.AddSkript("einleitung"));
+    Console.ReadKey();
     Console.Clear();
-    Sprechen($"HILFE!!\nHilf mir!");
-    Console.WriteLine();
-    Console.Clear();
-    // Akt1(); // !! endlose Schleife
+   Sprechen("hallo?");  
+  Console.ReadKey();
+  Console.Clear();
+  Akt1(); // !! endlose Schleife
 
 }
 else if (antwort == "2")
 {
-    spieler.Speichern();
+    DatenLaden();// wie aufbauen?
 }
 else if (antwort == "3")
 {
@@ -36,14 +44,15 @@ else if (antwort == "3")
 else
 { Console.WriteLine("Wählen Sie 1, 2 oder 3"); }
 
-void Sprechen(string text)// nur hier außer andere Klasse
+void Sprechen(string spr)// nur hier außer andere Klasse
 {
-    foreach (char c in text)
+    foreach (char c in spr)
     {
-        Console.WriteLine(string.Join("", c));
+        Console.WriteLine(string.Join("",c));
         Thread.Sleep(50);
+        Console.WriteLine();
     }
-    Console.WriteLine();
+    
 }
 
 void Akt1()
@@ -55,8 +64,9 @@ void Akt1()
                 new MonsterGruppe("Hanuta", 40, 15, 20, 1, 2, 6, "Plätzchen Wüste")
             });
 
+    SpielSpeichern();
     Console.Clear();
-    Akt1();
+    Akt2();
 }
 
 void Akt2()
@@ -68,8 +78,9 @@ void Akt2()
                 new MonsterGruppe("Haribo", 50, 25, 40, 1, 2, 10, "Pummelig Gummifeld")
             });
 
+    SpielSpeichern();
     Console.Clear();
-    Akt2();
+    Akt3();
 }
 
 void Akt3()
@@ -79,13 +90,14 @@ void Akt3()
             {
                 new MonsterGruppe("Toffee", 60, 35, 45, 1, 3, 20, "Karamell Sumpf")
             });
+    SpielSpeichern();
 
 }
 
 void Bossbegegnen()
 {
     Boss schokoB = new Boss();
-    schokoB.Dialog1();
+    
 }
 void Kampf(List<MonsterGruppe> monsterGruppen)
 {
@@ -124,7 +136,15 @@ void Kampf(List<MonsterGruppe> monsterGruppen)
                         }
                         else if (itemWahl == "2")
                         {
-                            spieler.Heilen();
+                            if (spieler.Inventar.Contains("Heiltrank"))// Copilot: dann kann es "Heiltrank" als "2" abrufen und bringen
+                            {
+                                spieler.Heilen();
+                            }
+                            else
+                            {
+                                spieler.Sprechen("Keine Heiltrank mehr!");
+                            }
+
                         }
                         else if (itemWahl == "3")
                         {
@@ -133,7 +153,7 @@ void Kampf(List<MonsterGruppe> monsterGruppen)
                         }
                         else
                         {
-                            spieler.Sprechen("Wähle richitig ein!");
+                            spieler.Sprechen("Wähle richitig!");
                         }
                     }                    
                 }
@@ -142,7 +162,7 @@ void Kampf(List<MonsterGruppe> monsterGruppen)
                     spieler.Sprechen("Lauf weg!");
                     break;
                 }
-                else { Sprechen("Wähle ricitig ein!"); }
+                else { Sprechen("Wähle ricitig!"); }
 
             }
             if (monster.HP <= 0)
@@ -159,6 +179,50 @@ void Kampf(List<MonsterGruppe> monsterGruppen)
         Console.WriteLine("--------------------------------------------------------");
     }
 }
+void SpielSpeichern() {
+    Console.WriteLine("Speichern?\n1: Ja\n2: Nein\n3: Exit");
+        string speichernAntwort = Console.ReadLine()?? "".Trim()??"";
+    if (speichernAntwort == "1")
+    {
+        spieler.Speichern();
+        Sprechen("Spiel gespeichert!");
+    }
+    else if (speichernAntwort == "2")
+    {
+        Sprechen("Weiter geht's");
+    }
+    else if (speichernAntwort == "3")
+    {
+        Environment.Exit(0); // testen
+    }
+    else return;
+}
+void DatenLaden()//copilot suchen
+{
+    string speicherPfad = "spielstand.txt";
+    if (File.Exists(speicherPfad))
+    {
+        string[] gespeicherteDaten = File.ReadAllLines(speicherPfad);
+        foreach (string zeile in gespeicherteDaten)
+        {
+            Console.WriteLine(zeile);
+        }
+        Console.WriteLine("Weiter spielen?\n1: Ja\n2: Nein)");
+        string weiterAntwort = Console.ReadLine() ?? "".Trim() ?? "";
+        if (weiterAntwort == "1")
+        {
+            Console.Clear();
+            Akt1();
+        }
+        else
+        {
+            Sprechen("Spiel beendet.");
+        }
+
+    }
+    else { Console.WriteLine("Leer"); }
+}
+
 void SchadenNehmen(ref int hp, int spielerAngriff) { }
 Console.WriteLine($"Inventar: {string.Join(", ", spieler.Inventar)}");
 
