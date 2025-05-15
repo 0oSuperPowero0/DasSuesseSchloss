@@ -18,13 +18,13 @@ public class Spieler : LebensObjekte
     public List<string> Inventar { get; private set; } = new List<string>();// nur Unter dem Spieler verfügbar
 
     public Spieler() : base("Prinzen Rolle", 100) { } // Name festgelegt
-    
+
     public override int Angriff()
     {
         Random rnd = new Random();
-        return rnd.Next(MinAngriff,MaxAngriff);
-    }  
-    public void AddXP(int xp) 
+        return rnd.Next(MinAngriff, MaxAngriff);
+    }
+    public void AddXP(int xp)
     {
         XP += xp;
         Console.WriteLine($"{Name} erhält {xp} XP!\n< Lv.{Level} XP: {XP}>");
@@ -32,27 +32,43 @@ public class Spieler : LebensObjekte
         {
             LevelUp();
         }
-    }
-    private void LevelUp()
-    {        
-    }
+        else if (XP >= 50)
+        {
+            LevelUp();
+        }
+        else if (XP >= 70)
+        {
+            LevelUp();
+        }
 
-    public void LevelUp(Action naechst)//hp und Angriffkraftbereich in der Mothode gerade ändern
+
+    }
+  
+
+    public void LevelUp()//hp und Angriffkraftbereich in der Mothode gerade ändernAction naechst
     {
         Level++;
-        int neueMaxHP = Level * 50 + 100; 
+        int neueMaxHP = Level * 50 + 100;
         HP = Math.Min(HP + 50, neueMaxHP); //HP += 50;
         MinAngriff = (int)(MinAngriff * 1.5);
         MaxAngriff = (int)(MaxAngriff * 1.5);
         Console.WriteLine($"{Name} erreicht Level {Level}!\n< Lv. {Level} HP: {HP}>");
 
-        SetGameProgress(naechst);
-     
+
     }
-    public void SetGameProgress(Action naechst)
-    {
-        naechst.Invoke(); // Callback!
-    }
+        public void Zelten()
+        {
+            Console.Clear();
+            Sprechen("Schalf gut!");
+
+            HP = Level * 50 + 100; // voll HP
+            Sprechen($"{Name} +{HP} HP");
+            Console.ReadKey();
+        }
+   // public void SetGameProgress(Action naechst)
+   // {
+   //     naechst.Invoke(); // Callback!
+   // }
     public void AddItem(string item) // Nach dem Kampfen Item von Monster kriegen
     {
         Inventar.Add(item);
@@ -60,39 +76,37 @@ public class Spieler : LebensObjekte
     }
     public void InventarAnzeigen()
     {
-        Console.WriteLine($"Inventar: {string.Join(" - ", Inventar)}");
-    }
-    public void InventarEntfernen(string item)
-    {
-        if (Inventar.Contains(item))
-        {
-            Inventar.Remove(item);
-            Sprechen($"{item} wurde aus dem Inventar entfernt.");
-        }
-        else
-        {
-            Sprechen($"{item} ist nicht im Inventar.");
-        }
+        Console.WriteLine($"Inventar: \n-{string.Join("\n-", Inventar)}");
+
     }
     public void Heilen()
-    { 
+    {
         int neueMaxHP = Level * 50 + 100; // wenn LevelUp wird, stieg MaxHP
         if (Inventar.Contains("Heiltrank"))
         {
-            HP = Math.Min(HP + 50, neueMaxHP);//HP += 50;
+            int geheilteHP = Math.Min(HP + 50, neueMaxHP);
+            int gewonnenHP = geheilteHP - HP;
+            HP = geheilteHP; //innerhalb der maximalen HP des Spielers
             Inventar.Remove("Heiltrank");
             Sprechen($"{Name} hat einen Heiltrank getrunken.\n + 50 HP\n < Prinzen Rollen : {HP} ");
         }
         else
         {
-            Sprechen("Keine Heiltrank! Lauf weg! ");  
+            Sprechen("Keine Heiltrank! Lauf weg! ");
         }
     }
     public void Speichern()
     {
-        string daten = $"Level:{Level}\nHP:{HP}\nXP:{XP}\nInventar:{string.Join(",", Inventar)}";//teilen
-        File.WriteAllText("spielstand.txt", daten); // System.IO.File erstellt ein Dateistreams!! recherchieren!!
-        Sprechen("Spielstand gespeichert!");
+        var daten = new SpielDaten
+        {
+            Level = Level,
+            HP = HP,
+            XP = XP,
+            Inventar = Inventar
+        };
+       // string daten = $"Level:{Level}\nHP:{HP}\nXP:{XP}\nInventar:{string.Join(",", Inventar)}";//teilen
+       // File.WriteAllText("spielstand.txt", daten); // System.IO.File erstellt ein Dateistreams!! recherchieren!!
+       // Sprechen("Spielstand gespeichert!");
     }
     public void Laden()
     {
@@ -131,10 +145,23 @@ public class Spieler : LebensObjekte
         }
         else
         {
-            Sprechen("Kein gespeicherter Spielstand gefunden!");
+            Sprechen("Kein Datei!");
         }
     }
+      
 }
+    //public void InventarEntfernen(string item)
+    //{
+    //    if (Inventar.Contains(item))
+    //    {
+    //        Inventar.Remove(item);
+    //        Sprechen($"{item} wurde aus dem Inventar entfernt.");
+    //    }
+    //    else
+    //    {
+    //        Sprechen($"{item} ist nicht im Inventar.");
+    //    }
+    //}
 
 
 

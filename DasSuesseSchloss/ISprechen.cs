@@ -14,7 +14,7 @@ public interface ISprechen
         foreach (char c in spr)
         {
             Console.Write(c);// muss ändern die horizontale Ausgabe: Console.Write = gelöst!
-            Thread.Sleep(50);
+            Thread.Sleep(25);
         }Console.WriteLine();
 
     }
