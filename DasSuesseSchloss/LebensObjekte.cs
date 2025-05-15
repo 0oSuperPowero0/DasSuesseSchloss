@@ -8,7 +8,7 @@ namespace DasSuesseSchloss;
 public abstract class LebensObjekte : ISprechen
 {
     public string Name { get; protected set; }// Nur in vererbte Klasse oder gleiche Klasse
-    public int HP { get; protected set; }
+    public int HP;
 
     public LebensObjekte(string name, int hp)
     {

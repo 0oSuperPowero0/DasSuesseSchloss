@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,13 +32,26 @@ public class Spieler : LebensObjekte
         {
             LevelUp();
         }
-    }  private void LevelUp()//hp und Angriffkraftbereich in der Mothode gerade ändern
+    }
+    private void LevelUp()
+    {        
+    }
+
+    public void LevelUp(Action naechst)//hp und Angriffkraftbereich in der Mothode gerade ändern
     {
         Level++;
-        HP += 50;
+        int neueMaxHP = Level * 50 + 100; 
+        HP = Math.Min(HP + 50, neueMaxHP); //HP += 50;
         MinAngriff = (int)(MinAngriff * 1.5);
         MaxAngriff = (int)(MaxAngriff * 1.5);
         Console.WriteLine($"{Name} erreicht Level {Level}!\n< Lv. {Level} HP: {HP}>");
+
+        SetGameProgress(naechst);
+     
+    }
+    public void SetGameProgress(Action naechst)
+    {
+        naechst.Invoke(); // Callback!
     }
     public void AddItem(string item) // Nach dem Kampfen Item von Monster kriegen
     {
@@ -61,22 +75,64 @@ public class Spieler : LebensObjekte
         }
     }
     public void Heilen()
-    {
-        if (Inventar.Contains("HeilTrank"))
+    { 
+        int neueMaxHP = Level * 50 + 100; // wenn LevelUp wird, stieg MaxHP
+        if (Inventar.Contains("Heiltrank"))
         {
-            HP += 50;
-            Inventar.Remove("HeilTrank");
+            HP = Math.Min(HP + 50, neueMaxHP);//HP += 50;
+            Inventar.Remove("Heiltrank");
             Sprechen($"{Name} hat einen Heiltrank getrunken.\n + 50 HP\n < Prinzen Rollen : {HP} ");
         }
-        else// 2 Mal?
+        else
         {
             Sprechen("Keine Heiltrank! Lauf weg! ");  
         }
     }
     public void Speichern()
     {
-        File.WriteAllText("spielstand.txt", $"Level: {Level}\nXP: {XP}\nInventar: {string.Join(",", Inventar)}"); // System.IO.File erstellt ein Dateistreams!! recherchieren!!
-        Console.WriteLine("Spielstand gespeichert!");
+        string daten = $"Level:{Level}\nHP:{HP}\nXP:{XP}\nInventar:{string.Join(",", Inventar)}";//teilen
+        File.WriteAllText("spielstand.txt", daten); // System.IO.File erstellt ein Dateistreams!! recherchieren!!
+        Sprechen("Spielstand gespeichert!");
+    }
+    public void Laden()
+    {
+        string speicherPfad = "spielstand.txt";
+
+        if (File.Exists(speicherPfad))
+        {
+            string[] daten = File.ReadAllLines(speicherPfad); // lesen File
+
+            foreach (string zeile in daten)
+            {
+                string[] teile = zeile.Split(':'); // Datentrennung
+
+                if (teile.Length == 2)
+                {
+                    switch (teile[0])
+                    {
+                        case "Level":
+                            Level = int.Parse(teile[1]);
+                            break;
+                        case "HP":
+                            HP = int.Parse(teile[1]);
+                            break;
+                        case "XP":
+                            XP = int.Parse(teile[1]);
+                            break;
+                        case "Inventar":
+                            Inventar = new List<string>(teile[1].Split(',')); // Iventar
+                            break;
+                    }
+                }
+            }
+
+            Sprechen("Spielstand geladen!");
+            Console.WriteLine($"Level: {Level} HP: {HP} XP: {XP}\nInventar: \n-{string.Join("\n-", Inventar)}");
+        }
+        else
+        {
+            Sprechen("Kein gespeicherter Spielstand gefunden!");
+        }
     }
 }
 

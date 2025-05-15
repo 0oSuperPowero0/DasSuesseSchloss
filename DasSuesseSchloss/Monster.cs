@@ -23,6 +23,7 @@ public class Monster : LebensObjekte
         this.MaxAngriff = maxAngriff;
         XP = xp;
     }
+
     public override int Angriff()
     {
         Random rnd = new Random();
@@ -41,23 +42,27 @@ public class Boss : LebensObjekte
     {
         Random rnd = new Random();
         return rnd.Next(45, 60);
-    }    
+    }
+    
 
 }
+
 public class MonsterGruppe // separate Monstergruppe erstellen und kontrollieren
 {
     public List<Monster> MonsterListe { get; private set; } 
     public string Region { get; private set; } //Monster Stufe als Region trennen!!
-    public MonsterGruppe(string name, int hp, int minAngriff, int maxAngriff, int minMonster, int maxMonster, int xp, string region)
+    public MonsterGruppe(string name, int hp, int minAngriff, int maxAngriff,  int xp, string region)//int minMonster, int maxMonster,
     {
         Region = region;
-        MonsterListe = new List<Monster>();
-        Random rnd = new Random();
-        int monsterAnzahl = rnd.Next(minMonster, maxMonster + 1); // rnd.Next(==, +1)
-        for (int i = 0; i < monsterAnzahl; i++)
-        {
-            MonsterListe.Add(new Monster(name, hp, minAngriff, maxAngriff, xp));            
-        }
+        
+      MonsterListe = new List<Monster> { new Monster(name, hp, minAngriff, maxAngriff, xp) };
+        
+       //Random rnd = new Random();
+       //int monsterAnzahl = rnd.Next(minMonster, maxMonster + 1); // rnd.Next(==, +1)
+        //for (int i = 0; i < monsterAnzahl; i++)
+        //{
+        //    MonsterListe.Add(new Monster(name, hp, minAngriff, maxAngriff, xp));            
+        //}
     }        
 }
 

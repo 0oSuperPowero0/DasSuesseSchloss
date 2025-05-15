@@ -13,9 +13,9 @@ public interface ISprechen
           
         foreach (char c in spr)
         {
-            Console.WriteLine(string.Join("",c));// muss ändern die horizontale Ausgabe
+            Console.Write(c);// muss ändern die horizontale Ausgabe: Console.Write = gelöst!
             Thread.Sleep(50);
-        }   
+        }Console.WriteLine();
 
     }
     // jede Klasse die ISprechen implementiert, kann bentzen Typing Script.
