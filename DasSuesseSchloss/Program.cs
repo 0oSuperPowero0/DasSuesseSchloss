@@ -10,7 +10,7 @@ using System.Threading;
 Spieler spieler = new Spieler();
 Boss schokoB = new Boss();
 Text text = new Text();
-Console.WriteLine($"Inventar: {string.Join(", ", spieler.Inventar)}");
+Console.WriteLine($"Inventar: {string.Join(", ", spieler.Inventar ?? new List<string>())}");//Null
 
 StartMenu();
 
