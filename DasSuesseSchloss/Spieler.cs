@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DasSuesseSchloss;
@@ -15,7 +16,7 @@ public class Spieler : LebensObjekte
     public int MinAngriff { get; private set; } = 20; // Angriffkraftbereich beginnen
     public int MaxAngriff { get; private set; } = 30;
 
-    public List<string> Inventar { get; private set; } = new List<string>();// nur Unter dem Spieler verfügbar
+    public List<string> Inventar { get; private set; } = new List<string>();// Null
 
     public Spieler() : base("Prinzen Rolle", 100) { } // Name festgelegt
 
@@ -28,22 +29,12 @@ public class Spieler : LebensObjekte
     {
         XP += xp;
         Console.WriteLine($"{Name} erhält {xp} XP!\n< Lv.{Level} XP: {XP}>");
-        if (XP >= 30)
+        while ((Level == 1 && XP >= 30) || (Level == 2 && XP >= 50) || (Level == 3 && XP >= 70))
         {
             LevelUp();
         }
-        else if (XP >= 50)
-        {
-            LevelUp();
-        }
-        else if (XP >= 70)
-        {
-            LevelUp();
-        }
-
-
     }
-  
+
 
     public void LevelUp()//hp und Angriffkraftbereich in der Mothode gerade ändernAction naechst
     {
@@ -56,39 +47,61 @@ public class Spieler : LebensObjekte
 
 
     }
-        public void Zelten()
-        {
-            Console.Clear();
-            Sprechen("Schalf gut!");
+    public void Zelten()
+    {        
+        Console.Clear();
+        Sprechen("Schalf gut!");
 
-            HP = Level * 50 + 100; // voll HP
-            Sprechen($"{Name} +{HP} HP");
-            Console.ReadKey();
-        }
-   // public void SetGameProgress(Action naechst)
-   // {
-   //     naechst.Invoke(); // Callback!
-   // }
+        HP = Level * 50 + 100; // voll HP
+        Sprechen($"{Name} +{HP} HP");
+        Console.ReadKey();
+    }
+    
     public void AddItem(string item) // Nach dem Kampfen Item von Monster kriegen
     {
-        Inventar.Add(item);
-        Sprechen($"{Name} erhält: {item}");
+        Inventar.Add(item);        
     }
     public void InventarAnzeigen()
     {
-        Console.WriteLine($"Inventar: \n-{string.Join("\n-", Inventar)}");
+        if (Inventar.Count == 0)
+        {
+            Sprechen("Inventar ist leer.");
+            return;
+        }
+
+        Dictionary<string, int> inventarAnzahl = new Dictionary<string, int>();
+        foreach (string item in Inventar)
+        {
+            if (inventarAnzahl.ContainsKey(item))//Dictionary<TKey, TValue> -> false oder true
+            {
+                inventarAnzahl[item]++;
+            }
+            else
+            {
+                inventarAnzahl[item] = 1;
+            }
+            Console.Clear();
+            Console.WriteLine("Inventar:");
+            foreach (var itemTyp in inventarAnzahl)
+            {
+                //Key ->Ein eindeutiger Wert, der Daten identifiziert, Value ->Die mit diesem Schlüssel verknüpften Daten sind die tatsächlich zu speichernden Informationen.
+                Console.WriteLine($"- {itemTyp.Key} ({itemTyp.Value})");
+            }
+        }
+
+        //Console.WriteLine($"Inventar: \n-{string.Join("\n-", Inventar)}");
 
     }
     public void Heilen()
     {
         int neueMaxHP = Level * 50 + 100; // wenn LevelUp wird, stieg MaxHP
         if (Inventar.Contains("Heiltrank"))
-        {
+        {            
             int geheilteHP = Math.Min(HP + 50, neueMaxHP);
             int gewonnenHP = geheilteHP - HP;
             HP = geheilteHP; //innerhalb der maximalen HP des Spielers
             Inventar.Remove("Heiltrank");
-            Sprechen($"{Name} hat einen Heiltrank getrunken.\n + 50 HP\n < Prinzen Rollen : {HP} ");
+
         }
         else
         {
@@ -97,71 +110,94 @@ public class Spieler : LebensObjekte
     }
     public void Speichern()
     {
-        var daten = new SpielDaten
+        try
         {
-            Level = Level,
-            HP = HP,
-            XP = XP,
-            Inventar = Inventar
-        };
-       // string daten = $"Level:{Level}\nHP:{HP}\nXP:{XP}\nInventar:{string.Join(",", Inventar)}";//teilen
-       // File.WriteAllText("spielstand.txt", daten); // System.IO.File erstellt ein Dateistreams!! recherchieren!!
-       // Sprechen("Spielstand gespeichert!");
+            var daten = new SpielDaten
+            {
+                Level = Level,
+                HP = HP,
+                XP = XP,
+                Inventar = Inventar
+            };
+
+            string json = JsonSerializer.Serialize(daten, new JsonSerializerOptions { WriteIndented = true });
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                Sprechen("Fehler: Speicherprozess erzeugt leere Daten!");
+                return;
+            }
+
+            File.WriteAllText("spielstand.json", json);// truncated and overwritten
+            Sprechen("Spielstand gespeichert!");
+            Console.ReadKey();
+            Console.Clear();
+        }
+        catch (Exception e) { Sprechen($"Fehler beim Speichern: {e.Message}"); }
     }
     public void Laden()
     {
-        string speicherPfad = "spielstand.txt";
+        string speicherPfad = "spielstand.json";
 
-        if (File.Exists(speicherPfad))
+        if (!File.Exists(speicherPfad))
         {
-            string[] daten = File.ReadAllLines(speicherPfad); // lesen File
-
-            foreach (string zeile in daten)
+            Sprechen("Fehler: Keine gespeicherte Datei vorhanden!");
+            return;
+        }
+        try
+        {
+            string json = File.ReadAllText(speicherPfad); // lesen File
+            if (string.IsNullOrWhiteSpace(json))
             {
-                string[] teile = zeile.Split(':'); // Datentrennung
-
-                if (teile.Length == 2)
-                {
-                    switch (teile[0])
-                    {
-                        case "Level":
-                            Level = int.Parse(teile[1]);
-                            break;
-                        case "HP":
-                            HP = int.Parse(teile[1]);
-                            break;
-                        case "XP":
-                            XP = int.Parse(teile[1]);
-                            break;
-                        case "Inventar":
-                            Inventar = new List<string>(teile[1].Split(',')); // Iventar
-                            break;
-                    }
-                }
+                Sprechen("Fehler: Gespeicherte Datei ist leer oder ungültig!");
+                return;
             }
 
+            var daten = JsonSerializer.Deserialize<SpielDaten>(json);
+            if (daten == null)
+            {
+                Sprechen("Fehler: Gespeicherte Daten konnten nicht gelesen werden!");
+                return;
+            }
+
+            Level = daten.Level > 0 ? daten.Level : 1;
+            HP = daten.HP > 0 ? daten.HP : 100;
+            XP = daten.XP >= 0 ? daten.XP : 0;
+            Inventar = daten.Inventar ?? new List<string>();
+
             Sprechen("Spielstand geladen!");
-            Console.WriteLine($"Level: {Level} HP: {HP} XP: {XP}\nInventar: \n-{string.Join("\n-", Inventar)}");
+            Console.ReadKey();
+            Console.Clear();
+
+            Dictionary<string, int> inventarAnzahl = new Dictionary<string, int>();
+
+            foreach (string item in Inventar)
+            {
+                if (inventarAnzahl.ContainsKey(item))
+                {
+                    inventarAnzahl[item]++;
+                }
+                else
+                {
+                    inventarAnzahl[item] = 1;
+                }
+            }
+            Console.WriteLine("Inventar:");
+            foreach (var itemTyp in inventarAnzahl)
+            {
+                Console.WriteLine($"- {itemTyp.Key} ({itemTyp.Value})");
+            }
+            //Console.WriteLine($"Level: {Level} HP: {HP} XP: {XP}\nInventar: \n-{string.Join("\n-", Inventar ?? new List<string>())}");
+
         }
-        else
+        catch (Exception e)
         {
-            Sprechen("Kein Datei!");
+            Sprechen($"Fehler beim Laden: {e.Message}");
         }
     }
-      
+
+
 }
-    //public void InventarEntfernen(string item)
-    //{
-    //    if (Inventar.Contains(item))
-    //    {
-    //        Inventar.Remove(item);
-    //        Sprechen($"{item} wurde aus dem Inventar entfernt.");
-    //    }
-    //    else
-    //    {
-    //        Sprechen($"{item} ist nicht im Inventar.");
-    //    }
-    //}
+
 
 
 

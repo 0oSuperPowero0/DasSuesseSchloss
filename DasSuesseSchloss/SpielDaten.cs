@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace DasSuesseSchloss
 {
-    internal class SpielDaten
+    public class SpielDaten
     {
-        public int HP { get; internal set; }
-        public List<string> Inventar { get; internal set; }
-        public int XP { get; internal set; }
-        public int Level { get; internal set; }
+        public int Level { get; set; }
+        public int HP { get; set; }
+        public int XP { get; set; }
+        public List<string> Inventar { get; set; } = new List<string>();
     }
 }

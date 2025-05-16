@@ -16,15 +16,16 @@ private Dictionary<string, string> skripte = new Dictionary<string, string>();
     }
     private void Laden()
     {
-        if (File.Exists("skripte.jsosn"))
-        { string json = File.ReadAllText("skripte.json");
-            skripte = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+        if (File.Exists("skripte.json"))
+        { 
+            string json = File.ReadAllText("skripte.json");
+            var tempSkripte = JsonSerializer.Deserialize<Dictionary<string, string>>(json); //Verhindern Sie Fehler, indem Sie es auf das Standardwörterbuch setzen, wenn es null ist
+
+            skripte = tempSkripte ?? new Dictionary<string, string>();
         }
         else
         {
-        skripte["einleitung1"] = "Das Süse Schloss.\nEines Tages wurde das glückliche und süße Sweet Land von einer Katastrophe heimgesucht.\r\nBaron Choco, ein Verräter aus Sweetland, hat den König von Sweet verraten und alle Höflinge im hohen Süßigkeitenturm von Sweet Castle eingesperrt.\r\nDie Prinzessin, die nur knapp entkommen war, kam, um den faulen Prinzen aus dem Nachbarland zu finden!!!\r\n";
-            skripte[""] = "";
-            
+        skripte["einleitung1"] = "Eines Tages wurde das glückliche und süße Sweet Land von einer Katastrophe heimgesucht.\r\nBaron Choco, ein Verräter aus Sweetland, hat den König von Sweet verraten und alle Höflinge im hohen Süßigkeitenturm von Sweet Castle eingesperrt.\n";            
         skripte["akt1"] = "Staubig Gegend";
         skripte["akt2"] = "Boing Boing";
         skripte["akt3"] = "klebrig matschig";
@@ -33,7 +34,7 @@ private Dictionary<string, string> skripte = new Dictionary<string, string>();
         
         Speichern();
         }
-        }
+    }
     public void Speichern()
     {
         string json = JsonSerializer.Serialize(skripte, new JsonSerializerOptions { WriteIndented = true});

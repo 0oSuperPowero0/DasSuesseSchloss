@@ -15,7 +15,7 @@ public class Monster : LebensObjekte
     private int MaxAngriff;
     public int XP { get; private set; }// Eigenschaft
 
-    public Monster(string name, int hp, int minAngriff, int maxAngriff, int xp) : base(name, hp)//Konstruktor
+    public Monster(string name, int hp, int minAngriff, int maxAngriff, int xp) : base(name, hp)// Konstruktor
     {
         this.MinAngriff = minAngriff; //zur besseren Lesbarkeit
         this.MaxAngriff = maxAngriff;
@@ -39,7 +39,7 @@ public class Boss : LebensObjekte
     public override int Angriff()
     {
         Random rnd = new Random();
-        return rnd.Next(45, 60);
+        return rnd.Next(45, 50);
     }
 
 

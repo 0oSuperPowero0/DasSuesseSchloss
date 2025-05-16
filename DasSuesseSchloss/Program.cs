@@ -5,18 +5,24 @@ using DasSuesseSchloss;
 using System;
 using System.Threading.Tasks.Dataflow;
 using System.Threading;
+using System.Xml.Linq;
+using System.Net.Security;
 
-
+AsciiArt charakter = new AsciiArt();
 Spieler spieler = new Spieler();
 Boss schokoB = new Boss();
 Text text = new Text();
 Console.WriteLine($"Inventar: {string.Join(", ", spieler.Inventar ?? new List<string>())}");//Null
 
+
 StartMenu();
 
 void StartMenu()
 {
+
     Console.Clear();
+    Header();
+    
     Console.WriteLine("1:Starten");
     Console.WriteLine("2:Daten laden");
     Console.WriteLine("3:Verlasen");
@@ -25,9 +31,12 @@ void StartMenu()
 
     if (antwort == "1")
     {
-        Sprechen(text.AddSkript("einleitung"));
-        Console.ReadKey();
+
         Console.Clear();
+        Header();
+
+        charakter.Charakter(2);
+        Console.WriteLine(text.AddSkript("einleitung1"));        
         spieler.AddItem("Heiltrank");
         spieler.AddItem("Heiltrank");
         spieler.AddItem("Strohhalm");
@@ -40,23 +49,32 @@ void StartMenu()
     }
     else if (antwort == "2")
     {
-        DatenLaden();// wie aufbauen?
+        Header();
+        DatenLaden();
     }
     else if (antwort == "3")
     {
+        Header();
         Verlassen();
     }
     else
-    { Console.WriteLine("Wählen Sie 1, 2 oder 3"); }
+    {
+        Header();
+        
+        Sprechen("\nWählen Sie 1, 2 oder 3");
+        StartMenu();
+    }
 }
 void Verlassen()
 {
-    Sprechen("Möchten Sie ins Bett gehen?.");
+    Header();
+    Sprechen("\nMöchten Sie ins Bett gehen?.");
     Console.WriteLine("1: Ja\n2: Nein");
     string verlassenAntwort = Console.ReadLine() ?? "".Trim() ?? "";
 
     if (verlassenAntwort == "1")
     {
+
         Console.Clear();
         Sprechen("Adios");
         Environment.Exit(0);
@@ -76,12 +94,12 @@ void SpielSpeichern()
 {
     Console.WriteLine("Speichern?\n1: Ja\n2: Nein\n3: Exit");
     string speichernAntwort = Console.ReadLine() ?? "".Trim() ?? "";
+
     if (speichernAntwort == "1")
     {
         Console.Clear();
-        spieler.Speichern();
-        Sprechen("Spiel gespeichert!");
-        Console.ReadKey();
+        spieler.Speichern();        
+        
 
     }
     else if (speichernAntwort == "2")
@@ -99,17 +117,34 @@ void DatenLaden()//copilot suchen
 
     spieler.Laden(); // speicherten Daten laden
 
+    if (spieler.Level <= 0 || spieler.HP <= 0)
+    {
+        Sprechen("Fehler");
+        StartMenu();
+        return;
+    }
+
     Console.WriteLine("Weiter spielen?\n1: Ja\n2: Nein");
     string weiterAntwort = Console.ReadLine() ?? "".Trim() ?? "";
 
     if (weiterAntwort == "1")
     {
         Console.Clear();
-
-        if (spieler.Level == 1) Akt1();
-        else if (spieler.Level == 2) Akt2();
-        else if (spieler.Level == 3) Akt3();
-        else BossKampf();
+        switch (spieler.Level)
+        {
+            case 1:
+                Akt1();
+                break;
+            case 2:
+                Akt2();
+                break;
+            case 3:
+                Akt3();
+                break;
+            default:
+                BossKampf();
+                break;
+        }
     }
     else
     {
@@ -121,6 +156,8 @@ void DatenLaden()//copilot suchen
 void Akt1()
 {
     Console.WriteLine(" Willkommen in der Plätzchen Wüste!");
+    charakter.Charakter(5);
+    Console.ReadKey();
     bool weiterKampfen = true;
     while (weiterKampfen)
     {
@@ -128,6 +165,11 @@ void Akt1()
         Monster zufallsMonster = rnd.Next(2) == 0
                    ? new Monster("Knoppers (Lv.1)", 35, 10, 15, 3)
                    : new Monster("Hanuta (Lv.1)", 40, 15, 20, 4);
+
+        Console.Clear();
+        Sprechen("Ein kpuspriges Monster erscheint!");
+        charakter.Charakter(5);
+        Console.ReadKey();
         Kampf(zufallsMonster);
         SpielSpeichern();
 
@@ -141,17 +183,17 @@ void Akt1()
         Console.WriteLine("\nMöchtest du weiter kämpfen?\n1: Ja\n2: Nein");
         string weiterAntwort = Console.ReadLine()?.Trim() ?? "";
 
-        if (weiterAntwort == "1")
-        {
-            NeueRunde(1);
-        }
-        else
-        {
-            Sprechen("Spiel beendet.");
-            
-            StartMenu();
-        }
-        return;
+       if (weiterAntwort == "1")
+       {
+           NeueRunde(1);
+       }
+       else
+       {
+           Sprechen("Spiel beendet.");
+           StartMenu();
+           return;
+       }
+
     }
 
 }
@@ -159,6 +201,7 @@ void Akt1()
 void Akt2()
 {
     Console.WriteLine(" Willkommen in Pummelig Gummifeld!");
+    Console.ReadKey();
     bool weiterKamfen = true;
     while (weiterKamfen)
     {
@@ -166,7 +209,12 @@ void Akt2()
         Monster zufallsMonster = rnd.Next(2) == 0
                    ? new Monster("Trolli (Lv.2)", 40, 15, 20, 5)
                    : new Monster("Haribo (Lv.2)", 50, 20, 25, 6);
+
+        Console.Clear();
+        Sprechen("Ein pummeliges Monster erscheint!");
+        Console.ReadKey();
         Kampf(zufallsMonster);
+
 
         SpielSpeichern();
         if (spieler.XP >= 50 && spieler.Level == 2)
@@ -178,17 +226,16 @@ void Akt2()
         }
         Console.WriteLine("\nMöchtest du weiter kämpfen?\n1: Ja\n2: Nein");
         string weiterAntwort = Console.ReadLine()?.Trim() ?? "";
-
         if (weiterAntwort == "1")
         {
-            NeueRunde(2);
+            NeueRunde(1);
         }
         else
         {
             Sprechen("Spiel beendet.");
-            
             StartMenu();
-        }return;
+            return;
+        }
     }
 
 }
@@ -196,12 +243,16 @@ void Akt2()
 void Akt3()
 {
     Console.WriteLine(" Willkommen in Karamell Sumpf!");
+    Console.ReadKey();
     bool weiterKamfen = true;
-    
-    while(weiterKamfen)
+
+    while (weiterKamfen)
     {
         Monster karmellMonster = new Monster("Toffee (Lv.3)", 55, 30, 35, 7);
 
+        Console.Clear();
+        Sprechen("Ein klebriges Monster erscheint!");
+        Console.ReadKey();
         Kampf(karmellMonster);
         SpielSpeichern();
 
@@ -215,16 +266,6 @@ void Akt3()
         Console.WriteLine("\nMöchtest du weiter kämpfen?\n1: Ja\n2: Nein");
         string weiterAntwort = Console.ReadLine()?.Trim() ?? "";
 
-        if (weiterAntwort == "1")
-        {
-            NeueRunde(3);
-        }
-        else
-        {
-            Sprechen("Spiel beendet.");
-            
-            StartMenu();
-        }return;
     }
 }
 
@@ -232,14 +273,15 @@ void Akt3()
 void Kampf(Monster monster)
 {
     Console.Clear();
-
-
+    
     while (monster.HP > 0 && spieler.HP > 0) // Kampfen
     {
         Console.WriteLine("====================================");
         Console.WriteLine($" {spieler.Name} || Lv.{spieler.Level} || HP: {spieler.HP}\n\n");
+        
         Console.WriteLine($"\n {monster.Name} || HP: {monster.HP}");// Status
         Console.WriteLine("====================================\n");
+
 
         Console.WriteLine("Dein Zug! Was möchtest du tun?\n1: Angreifen\n2: Inventar\n3: Entkommen\n");
         string waehlen = Console.ReadLine() ?? "".Trim() ?? "";// wählen die Option
@@ -249,20 +291,19 @@ void Kampf(Monster monster)
             case "1":
 
                 Console.Clear();
-
                 int spielerAngriff = spieler.Angriff();
-                Sprechen($"\n\n\n{spieler.Name} greift {monster.Name} an!");
-
-                monster.SchadenNehmen(ref monster.HP, spielerAngriff);
+                Sprechen($"{spieler.Name} greift {monster.Name} an!");
+                monster.SchadenNehmen(spielerAngriff);
                 Sprechen($"{monster.Name} bekommt -{spielerAngriff} Schaden!");
-                
+                Console.ReadKey();
+
 
                 if (monster.HP > 0)
                 {
+                    Console.Clear();
                     int monsterAngriff = monster.Angriff();
-                    Sprechen($"\n\n\n{monster.Name} greift {spieler.Name} an!");
-
-                    spieler.SchadenNehmen(ref spieler.HP, monsterAngriff);
+                    Sprechen($"{monster.Name} greift {spieler.Name} an!");
+                    spieler.SchadenNehmen(monsterAngriff);
                     Sprechen($"{spieler.Name} bekommt -{monsterAngriff} Schaden!");
                     Console.ReadKey();
                 }
@@ -284,23 +325,26 @@ void Kampf(Monster monster)
                             if (spieler.Inventar.Contains("Brokkobomb"))
                             {
                                 Console.Clear();
-                                spieler.Sprechen("Brokkobomb!!");
-                                monster.SchadenNehmen(ref monster.HP, 10);
-                                Sprechen($"\n\n\n{monster.Name} bekommt -10 Schaden!");
+                                monster.SchadenNehmen( 20);
+                                Sprechen($"\n\n\nBrokkobomb!!!\n{schokoB.Name} bekommt -10 Schaden!");
                                 spieler.Inventar.Remove("Brokkobomb");
+                                Console.ReadKey();
                                 if (monster.HP > 0)
                                 {
+                                    Console.Clear();
                                     int monsterAngriff = monster.Angriff();
-                                    Sprechen($"\n\n\n{monster.Name} greift {spieler.Name} an!");
-                                    spieler.SchadenNehmen(ref spieler.HP, monsterAngriff);
+                                    Sprechen($"\n\n\n{monster.Name} greift {spieler.Name} an!");                                    
+                                    spieler.SchadenNehmen( monsterAngriff);
                                     Sprechen($"{spieler.Name} bekommt -{monsterAngriff} Schaden");
+                                    Console.ReadKey();
                                 }
                                 inventarCheck1 = false;
                             }
                             else
                             {
                                 Console.Clear();
-                                spieler.Sprechen("Keine Brokkobomb mehr!");// kann nicht zeigen
+                                Sprechen("Keine Brokkobomb mehr!");// kann nicht zeigen
+                                Console.ReadKey();
                                 inventarCheck1 = false;
                             }
                             break;
@@ -309,14 +353,18 @@ void Kampf(Monster monster)
 
                             if (spieler.Inventar.Contains("Heiltrank"))// Copilot: dann kann es "Heiltrank" als "2" abrufen und bringen
                             {
-                                spieler.Sprechen("Schluck*Schluck*");
                                 spieler.Heilen();
+                                Console.Clear();
+                                Sprechen("Schluck*Schluck");
+                                Sprechen($"{spieler.Name} hat einen Heiltrank getrunken.\n + 50 HP\n<{spieler.Name} : {spieler.HP}>");
+                                Console.ReadKey();
                                 inventarCheck1 = false;
 
                             }
                             else
                             {
-                                spieler.Sprechen("Keine Heiltrank mehr!");
+                                Sprechen("Keine Heiltrank mehr!");
+                                Console.ReadKey();
                                 inventarCheck1 = false;
                             }
                             break;
@@ -324,11 +372,13 @@ void Kampf(Monster monster)
 
                         case "3":
 
-                            spieler.Sprechen("Zurück zum Kampf!");
+                            Sprechen("Zurück zum Kampf!");
+                            Console.ReadKey();
                             inventarCheck1 = false;
                             break;
                         default:
-                            spieler.Sprechen("Wähle richitig!");
+                            Sprechen("Wähle richitig!");
+                            Console.ReadKey();
                             break;
                     }
 
@@ -338,11 +388,13 @@ void Kampf(Monster monster)
             case "3":
 
                 spieler.Sprechen("Lauf weg!");
+                Console.ReadKey();
                 StartMenu();
                 break;
 
             default:
                 Sprechen("Wähle ricitig!");
+                Console.ReadKey();
                 break;
         }
         Console.Clear();
@@ -362,8 +414,8 @@ void Kampf(Monster monster)
             spieler.AddItem(itemFallen);
             gewonnenItems.Add(itemFallen);
         }
-            Sprechen($"{string.Join(", ", gewonnenItems)} erhalten!");
-        }
+        Sprechen($"{string.Join(", ", gewonnenItems)} erhalten!");
+    }
 
     Console.WriteLine("--------------------------------------------------------");
 
@@ -386,17 +438,20 @@ void BossKampf()
         switch (waehlen)
         {
             case "1":
+                Console.Clear();
                 int spielerAngriff = spieler.Angriff();
-                Sprechen($"\n\n\n{spieler.Name} greift {schokoB.Name} an!");
-                schokoB.SchadenNehmen(ref schokoB.HP, spielerAngriff);
+                Sprechen($"{spieler.Name} greift {schokoB.Name} an!");                
+                schokoB.SchadenNehmen(spielerAngriff);
                 Sprechen($"{schokoB.Name} bekommt -{spielerAngriff} Schaden!");
-                
+                Console.ReadKey();
+
 
                 if (schokoB.HP > 0)
                 {
+                    Console.Clear();
                     int bossAngriff = schokoB.Angriff();
-                    Sprechen($"\n\n\n{schokoB.Name} greift {spieler.Name} an!");
-                    spieler.SchadenNehmen(ref spieler.HP, bossAngriff);
+                    Sprechen($"{schokoB.Name} greift {spieler.Name} an!");                    
+                    spieler.SchadenNehmen(bossAngriff);
                     Sprechen($"{spieler.Name} bekommt -{bossAngriff} Schaden!");
                     Console.ReadKey();
                 }
@@ -418,23 +473,26 @@ void BossKampf()
                             if (spieler.Inventar.Contains("Brokkobomb"))
                             {
                                 Console.Clear();
-                                spieler.Sprechen("Brokkobomb!!");
-                                schokoB.SchadenNehmen(ref schokoB.HP, 10);
-                                Sprechen($"\n\n\n{schokoB.Name} bekommt -10 Schaden!");
+                                schokoB.SchadenNehmen(5);
+                                Sprechen($"\n\n\nBrokkobomb!!!\n{schokoB.Name} bekommt -10 Schaden!");
                                 spieler.Inventar.Remove("Brokkobomb");
+                                Console.ReadKey();
                                 if (schokoB.HP > 0)
                                 {
+                                    Console.Clear();
                                     int monsterAngriff = schokoB.Angriff();
                                     Sprechen($"\n\n\n{schokoB.Name} greift {spieler.Name} an!");
-                                    spieler.SchadenNehmen(ref spieler.HP, monsterAngriff);
+                                    spieler.SchadenNehmen(monsterAngriff);
                                     Sprechen($"{spieler.Name} bekommt -{monsterAngriff} Schaden");
+                                    Console.ReadKey();
                                 }
                                 inventarCheck2 = false;
                             }
                             else
                             {
                                 Console.Clear();
-                                spieler.Sprechen("Keine Brokkobomb mehr!");// kann nicht zeigen
+                                Sprechen("Keine Brokkobomb mehr!");// kann nicht zeigen
+                                Console.ReadKey();
                                 inventarCheck2 = false;
                             }
                             break;
@@ -443,26 +501,32 @@ void BossKampf()
 
                             if (spieler.Inventar.Contains("Heiltrank"))// Copilot: dann kann es "Heiltrank" als "2" abrufen und bringen
                             {
-                                spieler.Sprechen("Schluck*Schluck*");
                                 spieler.Heilen();
+                                Console.Clear();
+                                Sprechen("Schluck*Schluck");
+                                Sprechen($"{spieler.Name} hat einen Heiltrank getrunken.\n + 50 HP\n<{spieler.Name} : {spieler.HP}>");
+                                Console.ReadKey();
                                 inventarCheck2 = false;
 
                             }
                             else
                             {
-                                spieler.Sprechen("Keine Heiltrank mehr!");
+                                Sprechen("Keine Heiltrank mehr!");
+                                Console.ReadKey();
                                 inventarCheck2 = false;
                             }
                             break;
 
 
                         case "3":
-
-                            spieler.Sprechen("Zurück zum Kampf!");
+                            
+                            Sprechen("Zurück zum Kampf!");
+                            Console.ReadKey();
                             inventarCheck2 = false;
                             break;
                         default:
-                            spieler.Sprechen("Wähle richitig!");
+                            Sprechen("Wähle richitig!");
+                            Console.ReadKey();
                             break;
                     }
                 }
@@ -470,12 +534,14 @@ void BossKampf()
 
             case "3":
 
-                spieler.Sprechen("Lauf weg!");
+                Sprechen("Lauf weg!");
+                Console.ReadKey();
                 StartMenu();
                 break;
 
             default:
                 Sprechen("Wähle ricitig!");
+                Console.ReadKey();
                 break;
         }
         Console.Clear();
@@ -484,15 +550,18 @@ void BossKampf()
         {
 
             Sprechen("Du hast SchokoB besiegt und das süße Schloss gerettet!");
+            Console.ReadKey();
+            StartMenu();
 
         }
     }
 }
-void Zelten() { }
+void Zelten() {}
 void NeueRunde(int aktNummer)
 {
     Console.Clear();
     Sprechen("Ein Monster erscheint!");
+    Console.ReadKey();
 
     Random rnd = new Random();
     Monster neuesMonster;
@@ -500,33 +569,45 @@ void NeueRunde(int aktNummer)
     if (aktNummer == 1)
     {
         neuesMonster = rnd.Next(2) == 0
-            ? new Monster("Knoppers (Lv.1)", 35, 10, 15, 3)
-            : new Monster("Hanuta (Lv.1)", 40, 15, 20, 4);
+            ? new Monster("Knoppers (Lv.1)", 35, 10, 15, 5)
+            : new Monster("Hanuta (Lv.1)", 40, 15, 20, 8);
     }
     else if (aktNummer == 2)
     {
         neuesMonster = rnd.Next(2) == 0
-            ? new Monster("Trolli (Lv.2)", 40, 15, 20, 5)
-            : new Monster("Haribo (Lv.2)", 50, 20, 25, 6);
+            ? new Monster("Trolli (Lv.2)", 40, 15, 20, 10)
+            : new Monster("Haribo (Lv.2)", 50, 20, 25, 12);
     }
     else // Akt3
     {
-        neuesMonster = new Monster("Toffee (Lv.3)", 55, 30, 35, 7);
+        neuesMonster = new Monster("Toffee (Lv.3)", 55, 30, 35, 20);
     }
 
     Kampf(neuesMonster);
 }
+void AddSkript() { }
+void Header()
+{
+    Console.WriteLine(@".oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.
+|>  |>                     |>  |>
+/\  /\                     /\  /\
+||__||  Das Süße Schloss   ||__||
+| oo |                     | oo |
+| || |_.""._.""._.""._.""._.""._| || |");
+    Console.WriteLine("");
+    Console.WriteLine("");
+}
 
-void Sprechen(string spr)// nur hier außer andere Klasse
+void Sprechen(string text)// nur hier außer andere Klasse
 
 {
-    foreach (char c in spr)
+    foreach (char c in text)
     {
         Console.Write(string.Join("", c));
         Thread.Sleep(25);
 
     }
     Console.WriteLine();
-
 }
+
 
