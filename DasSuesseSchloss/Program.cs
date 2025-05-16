@@ -36,12 +36,23 @@ void StartMenu()
         Header();
 
         charakter.Charakter(2);
-        Console.WriteLine(text.AddSkript("einleitung1"));        
+        Console.WriteLine("Eines Tages wurde das glückliche und süße Sweet Land von einer Katastrophe heimgesucht.\r\nBaron Choco, ein Verräter aus Sweetland, hat den König von Sweet verraten und alle Höflinge im hohen Süßigkeitenturm von Sweet Castle eingesperrt.\r\nDie Prinzessin, die nur knapp entkommen war, kam, um den faulen Prinzen aus dem Nachbarland zu finden!!!\r\n");       
         spieler.AddItem("Heiltrank");
         spieler.AddItem("Heiltrank");
         spieler.AddItem("Strohhalm");
         spieler.AddItem("Brokkobomb");
+        Sprechen("Ich brauche deine Hilfe!! Hier sind einige Sachen für Sie!");
+        Console.Clear();
+        charakter.Charakter(2);
         Sprechen("Du hast 2 Heiltrank, Brokkobomb und Strohhalm genommen.");
+        Console.ReadKey();
+        Console.Clear();
+        charakter.Charakter(9);
+        Sprechen("Ümhähä. Süßi! kommt mit mir züm Schlöss!!");
+        Console.ReadKey();
+        Console.Clear();
+        charakter.Charakter(11);
+        Sprechen("Neeeeeeeeiiin!!");
         Console.ReadKey();
         Console.Clear();
         Akt1();
@@ -159,27 +170,27 @@ void Akt1()
     charakter.Charakter(5);
     Console.ReadKey();
     bool weiterKampfen = true;
+
+
     while (weiterKampfen)
     {
+        if (spieler.Level >= 2)// Lv2 -> Akt2
+        {
+            spieler.Zelten();
+            Akt2();
+            return; //muss mit Akt2 fortfahren, also die weitere Codeausführung verhindern.
+        }
         Random rnd = new Random();
         Monster zufallsMonster = rnd.Next(2) == 0
-                   ? new Monster("Knoppers (Lv.1)", 35, 10, 15, 3)
-                   : new Monster("Hanuta (Lv.1)", 40, 15, 20, 4);
+            ? new Monster("Knoppers (Lv.1)", 35, 10, 15, 20)
+            : new Monster("Hanuta (Lv.1)", 40, 15, 20, 20);
 
         Console.Clear();
-        Sprechen("Ein kpuspriges Monster erscheint!");
-        charakter.Charakter(5);
+        Sprechen("Ein knuspriges Monster erscheint!");
         Console.ReadKey();
         Kampf(zufallsMonster);
         SpielSpeichern();
 
-        if (spieler.XP >= 30 && spieler.Level == 1)
-        {
-            spieler.LevelUp();
-            Zelten();
-            Akt2();
-            return; //muss mit Akt2 fortfahren, also die weitere Codeausführung verhindern.
-        }
         Console.WriteLine("\nMöchtest du weiter kämpfen?\n1: Ja\n2: Nein");
         string weiterAntwort = Console.ReadLine()?.Trim() ?? "";
 
@@ -193,6 +204,8 @@ void Akt1()
            StartMenu();
            return;
        }
+        if (spieler.XP >= 30 && spieler.Level == 1)
+        { spieler.LevelUp(); }
 
     }
 
@@ -200,15 +213,22 @@ void Akt1()
 
 void Akt2()
 {
+    
     Console.WriteLine(" Willkommen in Pummelig Gummifeld!");
     Console.ReadKey();
     bool weiterKamfen = true;
     while (weiterKamfen)
     {
+        if (spieler.Level >= 3)
+        {
+            spieler.Zelten();
+            Akt3();
+            return;
+        }
         Random rnd = new Random();
         Monster zufallsMonster = rnd.Next(2) == 0
-                   ? new Monster("Trolli (Lv.2)", 40, 15, 20, 5)
-                   : new Monster("Haribo (Lv.2)", 50, 20, 25, 6);
+            ? new Monster("Trolli (Lv.2)", 40, 15, 20, 30)
+            : new Monster("Haribo (Lv.2)", 50, 20, 25, 30);
 
         Console.Clear();
         Sprechen("Ein pummeliges Monster erscheint!");
@@ -217,18 +237,11 @@ void Akt2()
 
 
         SpielSpeichern();
-        if (spieler.XP >= 50 && spieler.Level == 2)
-        {
-            spieler.LevelUp();
-            Zelten();
-            Akt3();
-            return;
-        }
         Console.WriteLine("\nMöchtest du weiter kämpfen?\n1: Ja\n2: Nein");
         string weiterAntwort = Console.ReadLine()?.Trim() ?? "";
         if (weiterAntwort == "1")
         {
-            NeueRunde(1);
+            NeueRunde(2);
         }
         else
         {
@@ -236,19 +249,28 @@ void Akt2()
             StartMenu();
             return;
         }
+        if(spieler.XP >= 50 && spieler.Level ==2)
+         { spieler.LevelUp(); }
     }
 
 }
 
 void Akt3()
 {
+    
     Console.WriteLine(" Willkommen in Karamell Sumpf!");
     Console.ReadKey();
     bool weiterKamfen = true;
 
     while (weiterKamfen)
     {
-        Monster karmellMonster = new Monster("Toffee (Lv.3)", 55, 30, 35, 7);
+        if (spieler.Level >= 4)
+        {
+            spieler.Zelten();
+            BossKampf();
+            return; //muss mit Akt2 fortfahren, also die weitere Codeausführung verhindern.
+        }
+        Monster karmellMonster = new Monster("Toffee (Lv.3)", 55, 30, 35, 50);
 
         Console.Clear();
         Sprechen("Ein klebriges Monster erscheint!");
@@ -256,16 +278,20 @@ void Akt3()
         Kampf(karmellMonster);
         SpielSpeichern();
 
-        if (spieler.XP >= 70 && spieler.Level == 3)
-        {
-            spieler.LevelUp();
-            Zelten();
-            BossKampf();
-            return; //muss mit Akt2 fortfahren, also die weitere Codeausführung verhindern.
-        }
         Console.WriteLine("\nMöchtest du weiter kämpfen?\n1: Ja\n2: Nein");
         string weiterAntwort = Console.ReadLine()?.Trim() ?? "";
-
+        if (weiterAntwort == "1")
+        {
+            NeueRunde(3);
+        }
+        else
+        {
+            Sprechen("Spiel beendet.");
+            StartMenu();
+            return;
+        }
+        if (spieler.XP >= 60 && spieler.Level == 3)
+        { spieler.LevelUp(); }
     }
 }
 
@@ -417,12 +443,15 @@ void Kampf(Monster monster)
         Sprechen($"{string.Join(", ", gewonnenItems)} erhalten!");
     }
 
-    Console.WriteLine("--------------------------------------------------------");
+    Console.WriteLine("--------------------------------------------------------");   
+    Console.ReadKey();
 
 }
 void BossKampf()
 {
     Console.WriteLine("Das Süße Schloss");
+    Header();
+    charakter.Charakter(9);
     Boss schokoB = new Boss();
 
     while (schokoB.HP > 0 && spieler.HP > 0)
@@ -547,12 +576,14 @@ void BossKampf()
         Console.Clear();
 
         if (schokoB.HP <= 0)
-        {
-
+        {            
             Sprechen("Du hast SchokoB besiegt und das süße Schloss gerettet!");
             Console.ReadKey();
+            Console.Clear();
+            charakter.Charakter(10);
+            Sprechen("Süße Ending!!");
+            Console.ReadKey();
             StartMenu();
-
         }
     }
 }
@@ -569,18 +600,18 @@ void NeueRunde(int aktNummer)
     if (aktNummer == 1)
     {
         neuesMonster = rnd.Next(2) == 0
-            ? new Monster("Knoppers (Lv.1)", 35, 10, 15, 5)
-            : new Monster("Hanuta (Lv.1)", 40, 15, 20, 8);
+            ? new Monster("Knoppers (Lv.1)", 35, 10, 15, 20)
+            : new Monster("Hanuta (Lv.1)", 40, 15, 20, 20);
     }
     else if (aktNummer == 2)
     {
         neuesMonster = rnd.Next(2) == 0
-            ? new Monster("Trolli (Lv.2)", 40, 15, 20, 10)
-            : new Monster("Haribo (Lv.2)", 50, 20, 25, 12);
+            ? new Monster("Trolli (Lv.2)", 40, 15, 20, 30)
+            : new Monster("Haribo (Lv.2)", 50, 20, 25, 30);
     }
     else // Akt3
     {
-        neuesMonster = new Monster("Toffee (Lv.3)", 55, 30, 35, 20);
+        neuesMonster = new Monster("Toffee (Lv.3)", 55, 30, 35, 50);
     }
 
     Kampf(neuesMonster);
@@ -609,5 +640,3 @@ void Sprechen(string text)// nur hier außer andere Klasse
     }
     Console.WriteLine();
 }
-
-

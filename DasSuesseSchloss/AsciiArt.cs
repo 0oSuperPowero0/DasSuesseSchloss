@@ -113,7 +113,25 @@ namespace DasSuesseSchloss
            |   |   |   |   |   |   |
            |   |   |   |   |   |   |
            -------------------------
-"};
+",
+@"
+                       **  **
+                /\/\/\*** **** /\/\/\
+               |   P  |*******|  S   |  
+               /(((())\ **** (((( )))))  
+               (*O _O*)/ * ((((*^_ ^*)))) 
+              </__||__\    (((/_o||o_\))) 
+               _||  ||_      |/ /--\ \| 
+",
+        @"
+  
+       /\/\/\
+      |   P  |
+      /(((())\  
+     \( O AO )/  
+      /__||__\  
+      _||  ||_
+",};
         public void Charakter(int charakterNummer)
         {
             if (charakterNummer >= 0 && charakterNummer < charakterListe.Count)

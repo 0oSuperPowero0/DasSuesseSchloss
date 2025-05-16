@@ -25,7 +25,7 @@ private Dictionary<string, string> skripte = new Dictionary<string, string>();
         }
         else
         {
-        skripte["einleitung1"] = "Eines Tages wurde das glückliche und süße Sweet Land von einer Katastrophe heimgesucht.\r\nBaron Choco, ein Verräter aus Sweetland, hat den König von Sweet verraten und alle Höflinge im hohen Süßigkeitenturm von Sweet Castle eingesperrt.\n";            
+        skripte["einleitung"] = "Eines Tages wurde das glückliche und süße Sweet Land von einer Katastrophe heimgesucht.\r\nBaron Choco, ein Verräter aus Sweetland, hat den König von Sweet verraten und alle Höflinge im hohen Süßigkeitenturm von Sweet Castle eingesperrt.\r\nDie Prinzessin, die nur knapp entkommen war, kam, um den faulen Prinzen aus dem Nachbarland zu finden!!!\r\n";            
         skripte["akt1"] = "Staubig Gegend";
         skripte["akt2"] = "Boing Boing";
         skripte["akt3"] = "klebrig matschig";

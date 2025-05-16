@@ -27,15 +27,11 @@ public class Monster : LebensObjekte
         Random rnd = new Random();
         return rnd.Next(MinAngriff, MaxAngriff);
     }
-    public override string ToString() // Monster erscheint
-    {
-        return $"{Name} <HP: {HP}>";
-    }
-
+ 
 }
 public class Boss : LebensObjekte
 {
-    public Boss() : base("SchokoB", 300) { }
+    public Boss() : base("SchokoB", 150) { }
     public override int Angriff()
     {
         Random rnd = new Random();
